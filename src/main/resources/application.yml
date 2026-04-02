@@ -1,7 +1,19 @@
 server:
   port: 8180
 
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    config:
+      enabled: false
+
 eureka:
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
   client:
     service-url:
       defaultZone: http://eureka-user:zvBGTYdMUJV7mpRs35YA@localhost:8761/eureka/

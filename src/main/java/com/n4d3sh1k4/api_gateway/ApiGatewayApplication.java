@@ -23,7 +23,11 @@ public class ApiGatewayApplication {
 						"/api/v0/auth/register",
 						"/api/v0/auth/refresh",
 						"/api/v0/auth/forgot-password",
-						"/api/v0/auth/reset-password"
+						"/api/v0/auth/reset-password",
+						"/api/v0/auth/confirm",
+						"/api/v0/auth/resend-confirmation",
+						"/api/v0/oauth2/**",
+						"/api/v0//login/oauth2/**"
 				).uri("lb://security-service"))
 
 				.route("auth-logout", r -> r.path("/api/v0/auth/logout")
