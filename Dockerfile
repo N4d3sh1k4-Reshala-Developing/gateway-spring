@@ -3,10 +3,10 @@ FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /app
 
 # Копируем gradle файлы
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle .
-COPY settings.gradle .
+COPY api-gateway/gradlew .
+COPY api-gateway/gradle gradle
+COPY api-gateway/build.gradle .
+COPY api-gateway/settings.gradle .
 
 # Копируем исходники common и самого сервиса
 COPY common common
