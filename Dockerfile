@@ -14,7 +14,7 @@ COPY api-gateway api-gateway
 
 # Собираем сервис (замени :user-service на имя своего модуля)
 RUN chmod +x gradlew
-RUN ./gradlew :api-gateway:build -x test --no-daemon
+RUN ./gradlew build -x test --no-daemon
 
 # Stage 2: Запуск
 FROM eclipse-temurin:21-jre-alpine
