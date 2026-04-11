@@ -16,35 +16,44 @@ public class ApiGatewayApplication {
 
 	@Bean
 	public RouteLocator customRouteLocator(RouteLocatorBuilder builder, AuthenticationGatewayFilterFactory authFilter) {
+
+		final String API_PREFIX = "/api/v0";
+
 		return builder.routes()
-				// Маршрут 1: Регистрация, логин, восстановление пароля(без фильтра)
-				.route("auth-public", r -> r.path(
-						"/api/v0/auth/login",
-						"/api/v0/auth/register",
-						"/api/v0/auth/refresh",
-						"/api/v0/auth/forgot-password",
-						"/api/v0/auth/reset-password",
-						"/api/v0/auth/confirm",
-						"/api/v0/auth/resend-confirmation",
-						"/api/v0/oauth2/**",
-						"/api/v0//login/oauth2/**"
-				).uri("lb://security-service"))
-
-				.route("auth-logout", r -> r.path("/api/v0/auth/logout")
-						.filters(f -> f.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config())))
+				.route("security-service-public", r -> r
+						.path(
+								API_PREFIX + "/auth/login",
+								API_PREFIX + "/auth/register",
+								API_PREFIX + "/auth/refresh",
+								API_PREFIX + "/auth/forgot-password",
+								API_PREFIX + "/auth/reset-password",
+								API_PREFIX + "/auth/confirm",
+								API_PREFIX + "/auth/resend-confirmation",
+								API_PREFIX + "/oauth2/**",
+								API_PREFIX + "/login/oauth2/**")
+						.filters(f -> f.stripPrefix(2))
 						.uri("lb://security-service"))
 
-				// Маршрут 2: Статус (с фильтром)
-				.route("auth-status", r -> r.path("/api/v0/status/**")
-						.filters(f -> f.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config())))
+				.route("security-service-private", r -> r
+						.path(API_PREFIX + "/auth/logout",
+								API_PREFIX + "/status/hello")
+						.filters(f -> f
+								.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
+								.stripPrefix(2))
 						.uri("lb://security-service"))
 
-				// Маршрут 3: Работа с данными пользователей
-				.route("user-service", r -> r.path("/api/v0/user/**")
-						.filters(f -> f.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config())))
+				.route("user-service-private", r -> r.path(API_PREFIX + "/user/**")
+						.filters(f -> f
+								.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
+								.stripPrefix(2))
 						.uri("lb://user-service"))
+
+				.route("projects-service-private", r -> r.path(API_PREFIX + "/projects/**")
+						.filters(f -> f
+								.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
+								.stripPrefix(2))
+						.uri("lb://business-service"))
+
 				.build();
-
-
 	}
 }

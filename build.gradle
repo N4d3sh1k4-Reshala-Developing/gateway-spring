@@ -24,7 +24,7 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "2025.1.0")
+	set('springCloudVersion', "2025.1.1")
 }
 
 dependencies {
@@ -45,6 +45,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation(project(':common')) {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+	}
 }
 
 dependencyManagement {
