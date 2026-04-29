@@ -57,16 +57,23 @@ jobs:
           echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }} \
-            "mkdir -p ${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}"
+          # 1. Создаем папку ПРАВИЛЬНО через ssh
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }} "mkdir -p ${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}"
           
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml \
-              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }}:${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}/docker-compose.yml
+          # 2. Копируем docker-compose.yml
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }}:${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}/docker-compose.yml
 
+          # 3. Деплой
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }} << 'EOF'
+            # Заходим в ПРАВИЛЬНУЮ папку
             cd ${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}
-            cd ~/api-gateway
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" > .env
+            
+            # Нам нужно передать название образа в .env файл, 
+            # чтобы docker-compose.yml знал, какой образ качать
+            echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" > .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            
+            # Логинимся и обновляем
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose pull
             docker compose up -d
