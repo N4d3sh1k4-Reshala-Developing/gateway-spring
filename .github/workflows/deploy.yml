@@ -19,30 +19,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. Готовим имя образа в нижнем регистре
       - name: set lower case image name
         run: |
           echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
-      # 2. Логинимся ДО сборки (хорошая практика)
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
-      # 3. Единственная и правильная сборка
       - name: Build and Push image
         run: |
           docker build \
             --build-arg GHP_USER=n4d3sh1k4-reshala-developing \
             --build-arg GHP_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
-          
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # Нужно для копирования docker-compose.yml
+      - uses: actions/checkout@v4
 
       - name: set lower case image name
         run: |
@@ -60,24 +57,18 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          
-          # 1. Создаем папку ПРАВИЛЬНО через ssh
+
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }} "mkdir -p ${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}"
-          
-          # 2. Копируем docker-compose.yml
+
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }}:${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}/docker-compose.yml
 
-          # 3. Деплой
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }} << 'EOF'
-            # Заходим в ПРАВИЛЬНУЮ папку
+
             cd ${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}
-            
-            # Нам нужно передать название образа в .env файл, 
-            # чтобы docker-compose.yml знал, какой образ качать
+
             echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" > .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-            
-            # Логинимся и обновляем
+
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose pull
             docker compose up -d
