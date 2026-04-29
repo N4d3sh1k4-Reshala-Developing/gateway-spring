@@ -1,6 +1,13 @@
 FROM eclipse-temurin:25-jdk-alpine AS build
 WORKDIR /app
 
+ARG GHP_USER
+ARG GHP_TOKEN
+ENV GHP_USER=$GHP_USER
+ENV GHP_TOKEN=$GHP_TOKEN
+
+RUN echo "Building with GHP_USER: $GHP_USER"
+
 COPY gradlew .
 COPY gradle gradle
 
@@ -8,11 +15,6 @@ RUN chmod +x gradlew
 
 COPY build.gradle settings.gradle ./
 COPY src src
-
-ARG GHP_USER
-ARG GHP_TOKEN
-ENV GHP_USER=$GHP_USER
-ENV GHP_TOKEN=$GHP_TOKEN
 
 RUN ./gradlew bootJar -x test
 
