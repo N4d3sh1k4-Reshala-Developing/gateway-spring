@@ -1,6 +1,12 @@
 server:
   port: 8180
 
+services:
+  security-service:
+    uri: http://localhost:8181
+  solution-archive-service:
+    uri: http://localhost:8185
+
 spring:
   application:
     name: api-gateway

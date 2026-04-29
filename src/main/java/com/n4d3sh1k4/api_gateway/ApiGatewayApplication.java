@@ -1,5 +1,6 @@
 package com.n4d3sh1k4.api_gateway;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -8,6 +9,12 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class ApiGatewayApplication {
+
+	@Value("${services.security-service.uri}")
+    private String securityServiceUri;
+
+    @Value("${services.solution-archive-service.uri}")
+    private String solutionServiceUri;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiGatewayApplication.class, args);
@@ -33,7 +40,7 @@ public class ApiGatewayApplication {
 								API_PREFIX + "/oauth2/**",
 								API_PREFIX + "/login/oauth2/**")
 						.filters(f -> f.stripPrefix(2))
-						.uri("lb://security-service"))
+						.uri(securityServiceUri))
 
 				.route("security-service-private", r -> r
 						.path(API_PREFIX + "/auth/logout",
@@ -43,7 +50,7 @@ public class ApiGatewayApplication {
 						.filters(f -> f
 								.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
 								.stripPrefix(2))
-						.uri("lb://security-service"))
+						.uri(securityServiceUri))
 
 				.route("solution-archive-private", r -> r
 						.path(API_PREFIX + "/recognition/**",
@@ -51,7 +58,7 @@ public class ApiGatewayApplication {
 						.filters(f -> f
 								.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
 								.stripPrefix(2))
-						.uri("lb://solution-archive-service"))
+						.uri(solutionServiceUri))
 				.build();
 	}
 }

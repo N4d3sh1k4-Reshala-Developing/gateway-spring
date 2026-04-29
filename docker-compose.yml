@@ -1,0 +1,21 @@
+services:
+  api-gateway:
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: api-gateway
+    ports:
+      - "8180:8180"
+    environment:
+      - SERVER_PORT=8180
+      - SPRING_PROFILES_ACTIVE=prod
+      - EUREKA_CLIENT_ENABLED=false
+      - EUREKA_INSTANCE_HOSTNAME=api-gateway
+      - JWT_SECRET_ACCESS=${JWT_SECRET}
+      - SERVICES_SECURITY-SERVICE_URI=http://security-service:8181
+      - SERVICES_SOLUTION-ARCHIVE-SERVICE_URI=http://solution-archive-service:8080
+    networks:
+      - reshala-net
+    restart: unless-stopped
+
+networks:
+  reshala-net:
+    external: true
