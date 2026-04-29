@@ -44,6 +44,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4 # Нужно для копирования docker-compose.yml
 
+      - name: set lower case image name
+        run: |
+          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+
       - name: Tailscale
         uses: tailscale/github-action@v2
         with:
