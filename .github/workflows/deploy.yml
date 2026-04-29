@@ -6,6 +6,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  PROJECT_ROOT: "/home/${{ secrets.SERVER_USER }}/reshala-project"
+  SERVICE_NAME: "api-gateway"
 
 jobs:
   build-and-push:
@@ -55,10 +57,14 @@ jobs:
           echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           
-          # Копируем docker-compose.yml на сервер
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }}:~/api-gateway/docker-compose.yml
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }} \
+            "mkdir -p ${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}"
+          
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml \
+              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }}:${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}/docker-compose.yml
 
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_TAILSCALE_IP }} << 'EOF'
+            cd ${{ env.PROJECT_ROOT }}/${{ env.SERVICE_NAME }}
             cd ~/api-gateway
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" > .env
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
