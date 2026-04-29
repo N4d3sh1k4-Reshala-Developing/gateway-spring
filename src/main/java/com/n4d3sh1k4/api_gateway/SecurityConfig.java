@@ -19,7 +19,7 @@ public class SecurityConfig {
                     .pathMatchers("/actuator/**").permitAll()
                     .anyExchange().permitAll()
             )
-            .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable) // Отключаем то самое окошко логина
+            .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
             .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
             .build();
     }

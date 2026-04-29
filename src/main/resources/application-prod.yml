@@ -1,14 +1,11 @@
 server:
   port: 8180
-  # КРИТИЧНО: Чтобы Spring понимал, что запрос пришел через прокси (Nginx)
-  # и правильно строил Redirect URI для OAuth2
   forward-headers-strategy: native
 
 spring:
   application:
     name: api-gateway
 
-  # Настройки Multipart (уже есть, это гуд)
   servlet:
     multipart:
       max-file-size: 10MB
@@ -19,21 +16,17 @@ spring:
 eureka:
   instance:
     prefer-ip-address: true
-    # В Docker-сети hostname должен совпадать с именем сервиса
     hostname: api-gateway
     instance-id: ${spring.application.name}:${server.port}:${random.value}
   client:
     service-url:
-      # Обращаемся к Eureka по имени сервиса в Docker-сети
       defaultZone: http://eureka-user:zvBGTYdMUJV7mpRs35YA@discovery-service:8761/eureka/
 
-# Секрет должен совпадать со всеми остальными сервисами!
 jwt:
   secret:
     access: ${JWT_SECRET_ACCESS:dGhpcy1pcy1hLWxvY2FsLWRldi1zZWNsLyZXQtYmFzZsLTY0LWtleQ==}
 
 logging:
   level:
-    # На проде лучше поставить INFO, чтобы не забивать диск i3
     org.springframework.cloud.gateway: INFO
     org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO

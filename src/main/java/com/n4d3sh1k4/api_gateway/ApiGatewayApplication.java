@@ -27,8 +27,9 @@ public class ApiGatewayApplication {
 								API_PREFIX + "/auth/refresh",
 								API_PREFIX + "/auth/forgot-password",
 								API_PREFIX + "/auth/reset-password",
-								API_PREFIX + "/auth/confirm",
+								API_PREFIX + "/auth/confirm-email",
 								API_PREFIX + "/auth/resend-confirmation",
+								API_PREFIX + "/auth/yandex-mobile",
 								API_PREFIX + "/oauth2/**",
 								API_PREFIX + "/login/oauth2/**")
 						.filters(f -> f.stripPrefix(2))
@@ -36,24 +37,21 @@ public class ApiGatewayApplication {
 
 				.route("security-service-private", r -> r
 						.path(API_PREFIX + "/auth/logout",
+								API_PREFIX + "/user",
+								API_PREFIX + "/user/*",
 								API_PREFIX + "/status/hello")
 						.filters(f -> f
 								.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
 								.stripPrefix(2))
 						.uri("lb://security-service"))
 
-				.route("user-service-private", r -> r.path(API_PREFIX + "/user/**")
+				.route("solution-archive-private", r -> r
+						.path(API_PREFIX + "/recognition/**",
+								API_PREFIX + "/dataset")
 						.filters(f -> f
 								.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
 								.stripPrefix(2))
-						.uri("lb://user-service"))
-
-				.route("projects-service-private", r -> r.path(API_PREFIX + "/projects/**")
-						.filters(f -> f
-								.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
-								.stripPrefix(2))
-						.uri("lb://business-service"))
-
+						.uri("lb://solution-archive-service"))
 				.build();
 	}
 }
