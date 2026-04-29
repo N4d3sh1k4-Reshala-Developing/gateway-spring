@@ -36,7 +36,7 @@ jobs:
       - name: Build with Docker
         run: |
           docker build \
-            --build-arg GHP_USER=${{ github.actor }} \
+            --build-arg GHP_USER=n4d3sh1k4-reshala-developing \
             --build-arg GHP_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
 
