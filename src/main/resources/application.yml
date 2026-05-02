@@ -3,9 +3,9 @@ server:
 
 services:
   security-service:
-    uri: http://localhost:8181
+    uri: ${SECURITY_SERVICE_URI}
   solution-archive-service:
-    uri: http://localhost:8185
+    uri: ${ARCHIVE_SERVICE_URI:http}
 
 spring:
   application:
@@ -29,7 +29,7 @@ eureka:
     instance-id: ${spring.application.name}:${server.port}
   client:
     service-url:
-      defaultZone: http://eureka-user:zvBGTYdMUJV7mpRs35YA@localhost:8761/eureka/
+      defaultZone: http://${EUREKA_USER}:${EUREKA_PASSWORD}@${EUREKA_HOST:localhost}:8761/eureka/
 
 management:
   endpoint:
@@ -42,7 +42,7 @@ management:
 
 jwt:
   secret:
-    access: dGhpcy1pcy1hLWxvY2FsLWRldi1zZWNsLyZXQtYmFzZsLTY0LWtleQ==
+    access: ${JWT_ACCESS_SECRET}
 
 logging:
   level:
