@@ -5,7 +5,7 @@ services:
   security-service:
     uri: ${SECURITY_SERVICE_URI}
   solution-archive-service:
-    uri: ${ARCHIVE_SERVICE_URI:http}
+    uri: ${ARCHIVE_SERVICE_URI}
 
 spring:
   application:
