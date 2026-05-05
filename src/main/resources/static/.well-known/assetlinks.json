@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.bignerdranch.android.reshalaalfa01",
+    "sha256_cert_fingerprints":
+    ["A9:71:41:D2:7F:BA:EF:D6:2F:28:6E:62:EC:53:67:D3:F8:12:0D:90:28:17:CD:FE:66:57:20:B5:B6:49:DC:3E"]
+  }
+}]

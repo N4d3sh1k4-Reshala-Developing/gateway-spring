@@ -16,6 +16,7 @@ public class SecurityConfig {
             .csrf(ServerHttpSecurity.CsrfSpec::disable) // Отключаем CSRF для API
             .authorizeExchange(exchanges -> exchanges
                     .pathMatchers("/api/v0/auth/**").permitAll()
+                    .pathMatchers("/.well-known/assetlinks.json").permitAll()
                     .pathMatchers("/actuator/**").permitAll()
                     .anyExchange().permitAll()
             )
