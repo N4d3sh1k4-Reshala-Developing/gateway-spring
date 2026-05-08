@@ -53,8 +53,10 @@ public class ApiGatewayApplication {
 						.uri(securityServiceUri))
 
 				.route("solution-archive-private", r -> r
-						.path(API_PREFIX + "/recognition/**",
-								API_PREFIX + "/dataset")
+						.path(API_PREFIX + "/equation/recognition/**",
+								API_PREFIX + "/equation/user/**",
+								API_PREFIX + "/equation/dataset"
+								)
 						.filters(f -> f
 								.filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
 								.stripPrefix(2))
