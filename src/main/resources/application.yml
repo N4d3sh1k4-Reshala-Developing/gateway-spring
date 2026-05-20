@@ -3,9 +3,11 @@ server:
 
 services:
   security-service:
-    uri: ${SECURITY_SERVICE_URI}
+    uri: ${SECURITY_SERVICE_URI:http://localhost:8181}
   solution-archive-service:
-    uri: ${ARCHIVE_SERVICE_URI}
+    uri: ${ARCHIVE_SERVICE_URI:http://localhost:8185}
+  dozzle:
+    uri: ${DOZZlE_URI:http://localhost:8888}
 
 spring:
   application:
@@ -29,7 +31,7 @@ eureka:
     instance-id: ${spring.application.name}:${server.port}
   client:
     service-url:
-      defaultZone: http://${EUREKA_USER}:${EUREKA_PASSWORD}@${EUREKA_HOST:localhost}:8761/eureka/
+      defaultZone: http://${EUREKA_USER:eureka-user}:${EUREKA_PASSWORD:zvBGTYdMUJV7mpRs35YA}@${EUREKA_HOST:localhost}:8761/eureka/
 
 management:
   endpoint:
@@ -42,9 +44,17 @@ management:
 
 jwt:
   secret:
-    access: ${JWT_ACCESS_SECRET}
+    access: ${JWT_ACCESS_SECRET:AZGEwiclv3fkxe9GYSpLdIiwbWc/AzkV1SQi3YPIiq+vIAfAzrha9Q8xv79f3G3rJRPjUf1Nn0xWZ3sNajZD7Q==}
 
 logging:
   level:
     org.springframework.cloud.gateway: TRACE
     org.springframework.cloud.gateway.route.RouteDefinitionLocator: TRACE
+
+rabbitmq:
+  admin:
+    uri: ${RMQ_URI:http://localhost:15672}
+
+minio:
+  admin:
+    uri: ${MINIO_URI:http://localhost:9001}
