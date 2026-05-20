@@ -13,6 +13,9 @@ services:
       - JWT_ACCESS_SECRET=${JWT_SECRET}
       - SECURITY_SERVICE_URI=http://security-service-reshala:8181
       - ARCHIVE_SERVICE_URI=http://solution-archive-service-reshala:8185
+      - DOZZlE_URI=http://dozzle-reshala:8080
+      - RMQ_URI=http://rabbitmq-reshala:15672
+      - MINIO_URI=http://minio-reshala:9001
     networks:
       - reshala-net
     restart: unless-stopped
