@@ -18,7 +18,6 @@ public class AuthenticationGatewayFilterFactory extends AbstractGatewayFilterFac
     private final JwtUtils jwtUtils;
     private static final Logger log = LoggerFactory.getLogger(AuthenticationGatewayFilterFactory.class);
 
-
     public AuthenticationGatewayFilterFactory(JwtUtils jwtUtils) {
         super(Config.class);
         this.jwtUtils = jwtUtils;
