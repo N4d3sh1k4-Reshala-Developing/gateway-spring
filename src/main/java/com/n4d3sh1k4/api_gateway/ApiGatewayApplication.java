@@ -47,6 +47,7 @@ public class ApiGatewayApplication {
                                 API_PREFIX + "/auth/confirm-email",
                                 API_PREFIX + "/auth/resend-confirmation",
                                 API_PREFIX + "/auth/yandex-mobile",
+                                API_PREFIX + "/auth/link-social",
                                 API_PREFIX + "/oauth2/**",
                                 API_PREFIX + "/login/oauth2/**")
                         .filters(f -> f.stripPrefix(2))
