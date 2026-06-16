@@ -37,7 +37,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://api.reshala.n4d3sh1k4.site"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://api.reshala.n4d3sh1k4.site", "http://localhost:8186",  "https://adm.reshala.n4d3sh1k4.site"));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));

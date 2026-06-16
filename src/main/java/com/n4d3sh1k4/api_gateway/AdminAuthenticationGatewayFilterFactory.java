@@ -73,9 +73,9 @@ public class AdminAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
                 if (request.getQueryParams().containsKey("adm_token")) {
                     ResponseCookie adminCookie = ResponseCookie.from("Admin-Session-JWT", token)
                             .httpOnly(true)
-                            .secure(false) // Если в продакшене будет HTTPS, смени на true
-                            .path("/")     // КРИТИЧЕСКИ ВАЖНО: меняем с "/admin" на "/"
-                            .sameSite("Lax") // "Strict" может блокировать куку при редиректах с внешних страниц
+                            .secure(false)
+                            .path("/")
+                            .sameSite("Lax")
                             .build();
                     exchange.getResponse().addCookie(adminCookie);
                 }

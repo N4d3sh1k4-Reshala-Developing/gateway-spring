@@ -14,7 +14,6 @@ public class JwtUtils {
     private final SecretKey jwtAccessSecret;
 
     public JwtUtils(@Value("${jwt.secret.access}") String jwtAccessSecret) {
-        // Декодируем тот же секрет, что и в Auth Service
         this.jwtAccessSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtAccessSecret));
     }
 
