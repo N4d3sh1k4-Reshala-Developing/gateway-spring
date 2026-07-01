@@ -12,14 +12,14 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@EnableWebFluxSecurity // Важно: именно Flux версия
+@EnableWebFluxSecurity
 public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(ServerHttpSecurity.CsrfSpec::disable) // Отключаем CSRF для API
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .headers(headers -> headers
                         .frameOptions(ServerHttpSecurity.HeaderSpec.FrameOptionsSpec::disable)
                 )
@@ -45,7 +45,7 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Применять ко всем путям
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
