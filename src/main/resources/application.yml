@@ -50,6 +50,11 @@ logging:
   level:
     org.springframework.cloud.gateway: TRACE
     org.springframework.cloud.gateway.route.RouteDefinitionLocator: TRACE
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7
+      total-size-cap: 100MB
 
 rabbitmq:
   admin:

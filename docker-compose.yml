@@ -1,3 +1,5 @@
+name: reshala-containers
+
 services:
   api-gateway:
     image: ghcr.io/${IMAGE_NAME}:latest
@@ -16,6 +18,11 @@ services:
       - DOZZlE_URI=http://dozzle-reshala:8080
       - RMQ_URI=http://rabbitmq-reshala:15672
       - MINIO_URI=http://minio-reshala:9001
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     networks:
       - reshala-net
     restart: unless-stopped
