@@ -3,22 +3,36 @@ package com.n4d3sh1k4.api_gateway;
 import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Component
 public class AdminAuthenticationGatewayFilterFactory extends AbstractGatewayFilterFactory<AdminAuthenticationGatewayFilterFactory.Config> {
 
     private final JwtUtils jwtUtils;
     private static final Logger log = LoggerFactory.getLogger(AdminAuthenticationGatewayFilterFactory.class);
+
+    private static final Pattern STATIC_ASSET_PATTERN = Pattern.compile(
+        ".*\\.(css|js|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|otf|map)(\\?.*)?$",
+        Pattern.CASE_INSENSITIVE
+    );
+
+    @Value("${admin-cookie.same-site:Lax}")
+    private String sameSite;
+
+    @Value("${admin-cookie.secure:false}")
+    private boolean secure;
 
     public AdminAuthenticationGatewayFilterFactory(JwtUtils jwtUtils) {
         super(Config.class);
@@ -32,6 +46,13 @@ public class AdminAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
+            String path = request.getURI().getPath();
+
+            if (request.getMethod() == HttpMethod.GET && STATIC_ASSET_PATTERN.matcher(path).matches()) {
+                log.debug("Skipping admin auth for static asset: {}", path);
+                return chain.filter(exchange);
+            }
+
             String token = null;
 
             String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -47,11 +68,12 @@ public class AdminAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
                 HttpCookie cookie = request.getCookies().getFirst("Admin-Session-JWT");
                 if (cookie != null) {
                     token = cookie.getValue();
+                    log.debug("Admin auth via Admin-Session-JWT cookie for path: {}", path);
                 }
             }
 
             if (token == null) {
-                log.warn("Admin resource access denied: Token missing.");
+                log.warn("Admin resource access denied: Token missing. path={}", path);
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
@@ -73,14 +95,15 @@ public class AdminAuthenticationGatewayFilterFactory extends AbstractGatewayFilt
                 if (request.getQueryParams().containsKey("adm_token")) {
                     ResponseCookie adminCookie = ResponseCookie.from("Admin-Session-JWT", token)
                             .httpOnly(true)
-                            .secure(false)
+                            .secure(secure)
                             .path("/")
-                            .sameSite("Lax")
+                            .sameSite(sameSite)
                             .build();
                     exchange.getResponse().addCookie(adminCookie);
+                    log.debug("Set Admin-Session-JWT cookie (sameSite={}, secure={})", sameSite, secure);
                 }
 
-                log.info("Admin Filter forwarding request to: {}", request.getURI());
+                log.debug("Admin Filter forwarding request to: {}", request.getURI());
                 return chain.filter(exchange.mutate().request(mutatedRequestBuilder.build()).build());
             }
 
