@@ -20,7 +20,6 @@ public class ApiGatewayApplication {
     @Value("${services.dozzle.uri}")
     private String dozzleUri;
 
-
     @Value("${rabbitmq.admin.uri}")
     private String rabbitmqUri;
 
@@ -42,11 +41,13 @@ public class ApiGatewayApplication {
                                 API_PREFIX + "/auth/login",
                                 API_PREFIX + "/auth/register",
                                 API_PREFIX + "/auth/refresh",
+                                API_PREFIX + "/auth/oauth-bootstrap",
                                 API_PREFIX + "/auth/forgot-password",
                                 API_PREFIX + "/auth/reset-password",
                                 API_PREFIX + "/auth/confirm-email",
                                 API_PREFIX + "/auth/resend-confirmation",
                                 API_PREFIX + "/auth/yandex-mobile",
+                                API_PREFIX + "/auth/vk-mobile",
                                 API_PREFIX + "/auth/link-social",
                                 API_PREFIX + "/oauth2/**",
                                 API_PREFIX + "/login/oauth2/**")
@@ -55,9 +56,12 @@ public class ApiGatewayApplication {
 
                 .route("security-service-private", r -> r
                         .path(API_PREFIX + "/auth/logout",
+                                API_PREFIX + "/auth/sessions",
+                                API_PREFIX + "/auth/sessions/**",
                                 API_PREFIX + "/user",
                                 API_PREFIX + "/user/*",
-                                API_PREFIX + "/status/hello")
+                                API_PREFIX + "/status/hello",
+                                API_PREFIX + "/status/me")
                         .filters(f -> f
                                 .filter(authFilter.apply(new AuthenticationGatewayFilterFactory.Config()))
                                 .stripPrefix(2))
